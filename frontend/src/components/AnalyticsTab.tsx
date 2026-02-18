@@ -1,4 +1,4 @@
-import React from 'react';
+
 import AnalyticsGraph from './AnalyticsGraph'; // Reuse existing component
 
 const AnalyticsTab = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SchemeTarget from './SchemeTarget';
 import UpcomingSchemes from './UpcomingSchemes';
 import TotalSales from './TotalSales';

@@ -1,14 +1,9 @@
-import React from 'react';
-
 // Using a simple SVG implementation to avoid unknown dependencies
 const AnalyticsGraph = () => {
   // Mock data points
   const points = [20, 45, 30, 60, 55, 85, 70];
-  const max = 100;
 
   // Generate path d attribute
-  const width = 100; // percent
-  const height = 100; // percent units roughly
 
   // Create points for SVG polyline
   // We map index 0..6 to x=0..100%
