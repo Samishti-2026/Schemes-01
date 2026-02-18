@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: samishti-schemes-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    branch: main
