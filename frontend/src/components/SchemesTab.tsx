@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import CreateSchemeForm from './CreateSchemeForm';
 
 const SchemesTab = () => {
@@ -156,7 +156,7 @@ const SchemesTab = () => {
             </thead>
             <tbody className="divide-y divide-[#1F2937]">
               {filteredSchemes.length > 0 ? (
-                filteredSchemes.map((scheme) => (
+                filteredSchemes.map((scheme: any) => (
                   <tr key={scheme.id} className="hover:bg-[#1F2937]/50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="text-white font-medium">{scheme.name}</div>
@@ -173,8 +173,8 @@ const SchemesTab = () => {
                     <td className="px-6 py-4 text-gray-400 text-sm">{scheme.region}</td>
                     <td className="px-6 py-4">
                       <span className={`px - 2 py - 1 rounded - full text - xs border ${scheme.status === 'Active' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                          scheme.status === 'Expired' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                            'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                        scheme.status === 'Expired' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                          'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                         } `}>
                         {scheme.status}
                       </span>
