@@ -4,4 +4,5 @@ services:
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+    rootDirectory: frontend
     branch: main
