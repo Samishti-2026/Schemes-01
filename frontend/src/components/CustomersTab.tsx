@@ -84,6 +84,9 @@ const CustomersTab = () => {
       });
     }
 
+    // 3. Sort by Total Turnover (Desc)
+    data = data.sort((a, b) => b.totalTO - a.totalTO);
+
     return data;
   }, [simulatedData, activeFilters, filterText]);
 
@@ -136,6 +139,28 @@ const CustomersTab = () => {
 
   return (
     <div className="p-6 flex-1 min-h-0 flex flex-col gap-6 animate-fadeIn text-white">
+
+      {/* Scheme Details Inputs */}
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4">
+          <div className="flex-1 flex flex-col gap-1">
+            <label className="text-xs text-gray-400 ml-1">Scheme Name</label>
+            <input
+              type="text"
+              placeholder="Enter scheme name..."
+              className="bg-[#111318] border border-[#1F2937] rounded-xl px-4 py-2 w-full focus:border-cyan-500 outline-none placeholder-gray-600"
+            />
+          </div>
+          <div className="flex-[2] flex flex-col gap-1">
+            <label className="text-xs text-gray-400 ml-1">Description</label>
+            <input
+              type="text"
+              placeholder="Enter scheme description..."
+              className="bg-[#111318] border border-[#1F2937] rounded-xl px-4 py-2 w-full focus:border-cyan-500 outline-none placeholder-gray-600"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Top Row: Dropdowns */}
       <div className="flex flex-wrap gap-4 items-end">
@@ -248,7 +273,7 @@ const CustomersTab = () => {
         </div>
 
         <button className="bg-[#1F2937] hover:bg-[#2D3748] border border-gray-600 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
-          Simulate
+          Load
         </button>
       </div>
 

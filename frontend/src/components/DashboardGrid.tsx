@@ -4,7 +4,7 @@ import UpcomingSchemes from './UpcomingSchemes';
 import TotalSales from './TotalSales';
 import AnalyticsGraph from './AnalyticsGraph';
 // New Tabs
-import SchemesTab from './SchemesTab';
+// import SchemesTab from './SchemesTab';
 import CustomersTab from './CustomersTab';
 import AnalyticsTab from './AnalyticsTab';
 import SettingsTab from './SettingsTab';
@@ -14,8 +14,8 @@ const DashboardGrid = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Schemes': return <SchemesTab />;
-      case 'Customers': return <CustomersTab />;
+      // case 'Schemes': return <SchemesTab />; // Hidden
+      case 'Scheme': return <CustomersTab />;
       case 'Analytics': return <AnalyticsTab />;
       case 'Settings': return <SettingsTab />;
       case 'Dashboard':
@@ -54,15 +54,15 @@ const DashboardGrid = () => {
 
       {/* Sidebar */}
       <div className="w-64 border-r border-[#1F2937] flex flex-col hidden lg:flex bg-[#111318]">
-        <div className="p-6 border-b border-[#1F2937]">
+        {/* <div className="p-6 border-b border-[#1F2937]">
           <h1 className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
             Samishti Admin
           </h1>
-        </div>
+        </div> */}
 
         <nav className="flex-1 p-4 space-y-1">
           {/* Navigation Items */}
-          {['Dashboard', 'Schemes', 'Customers', 'Analytics', 'Settings'].map(item => (
+          {['Dashboard', 'Scheme', 'Analytics', 'Settings'].map(item => (
             <div
               key={item}
               onClick={() => setActiveTab(item)}
@@ -96,11 +96,11 @@ const DashboardGrid = () => {
 
         {/* Header */}
         <header className="h-16 border-b border-[#1F2937] flex items-center justify-between px-6 bg-[#111318]/50 backdrop-blur-md z-10">
-          <h2 className="text-lg font-semibold text-gray-200">{activeTab} Overview</h2>
-          <div className="flex items-center gap-4">
+          <h2 className="text-lg font-semibold text-gray-200">{activeTab}</h2>
+          {/* <div className="flex items-center gap-4">
             <span className="text-sm text-gray-400">Last updated: Just now</span>
 
-          </div>
+          </div> */}
         </header>
 
         {/* Dynamic Content */}
