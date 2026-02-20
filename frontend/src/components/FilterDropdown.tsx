@@ -13,7 +13,7 @@ interface FilterDropdownProps {
 }
 
 const FilterDropdown = ({ filterGroups, activeFilters, onToggleFilter, onClose }: FilterDropdownProps) => {
-  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,23 +36,25 @@ const FilterDropdown = ({ filterGroups, activeFilters, onToggleFilter, onClose }
   // "Region -> search -> East, West..." implies searching within the opened group.
   useEffect(() => {
     setSearchText('');
-  }, [hoveredGroup]);
+  }, [activeGroup]);
 
   return (
     <div ref={dropdownRef} className="absolute top-full left-0 mt-2 w-48 bg-[#1F2937] border border-gray-700 rounded-xl shadow-2xl overflow-visible z-50 animate-fadeIn flex flex-col">
       {filterGroups.map((group) => (
         <div
           key={group.name}
-          onMouseEnter={() => setHoveredGroup(group.name)}
-          onMouseLeave={() => setHoveredGroup(null)}
-          className="relative group/item px-4 py-3 hover:bg-gray-700 cursor-pointer flex justify-between items-center transition-colors first:rounded-t-xl last:rounded-b-xl border-b border-gray-700 last:border-0"
+          onClick={() => setActiveGroup(activeGroup === group.name ? null : group.name)}
+          className="relative group/item px-4 py-3 hover:bg-gray-700 cursor-pointer flex justify-between items-center transition-colors first:rounded-t-xl last:rounded-b-xl border-b border-gray-700 last:border-0 flex-wrap"
         >
-          <span className="text-sm font-medium text-gray-300 group-hover/item:text-white">{group.name}</span>
-          <svg className="w-4 h-4 text-gray-500 group-hover/item:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          <span className={`text-sm font-medium transition-colors ${activeGroup === group.name ? 'text-white' : 'text-gray-300 group-hover/item:text-white'} `}>{group.name}</span>
+          <svg className={`shrink-0 w-4 h-4 transition-colors ${activeGroup === group.name ? 'text-white' : 'text-gray-500 group-hover/item:text-white'} `} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
 
-          {/* Sub-menu (appears on hover) */}
-          {hoveredGroup === group.name && (
-            <div className="absolute left-full top-0 ml-2 w-56 bg-[#1F2937] border border-gray-700 rounded-xl shadow-2xl flex flex-col max-h-[300px] overflow-hidden">
+          {/* Sub-menu (appears on click) */}
+          {activeGroup === group.name && (
+            <div
+              className="absolute left-full top-0 ml-2 w-56 bg-[#1F2937] border border-gray-700 rounded-xl shadow-2xl flex flex-col max-h-[300px] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Search Input Header */}
               <div className="px-3 py-2 border-b border-gray-700 bg-gray-800/50 rounded-t-xl sticky top-0 z-10">
                 <input
