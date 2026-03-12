@@ -6,3 +6,4 @@ services:
     staticPublishPath: ./dist
     rootDirectory: frontend
     branch: main
+npm 

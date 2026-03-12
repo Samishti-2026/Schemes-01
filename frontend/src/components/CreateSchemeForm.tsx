@@ -1,58 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+
+interface SchemeData {
+  schemeName: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  targetType: string;
+  selectedTargetItem: string;
+  totalBudget: string;
+  maxQualifiers: string;
+  individualTarget: string;
+  rewardRate: string;
+  payoutPerPerson: number;
+  recipientType: string;
+  regionFilter: string;
+  name?: string;
+  budget?: string;
+  type?: string;
+}
 
 interface CreateSchemeFormProps {
   onCancel: () => void;
-  onSave: (data: any) => void;
-  initialData?: any; // Added for edit mode
+  onSave: (data: SchemeData) => void;
+  initialData?: SchemeData;
 }
 
-const CreateSchemeForm: React.FC<CreateSchemeFormProps> = ({ onCancel, onSave, initialData }) => {
-  // 1. Basic Scheme Details
-  const [schemeName, setSchemeName] = useState('');
-  const [description, setDescription] = useState('');
+const CreateSchemeForm = ({ onCancel, onSave, initialData }: CreateSchemeFormProps) => {
+  // 1. Basic Scheme Details — initialized from initialData for edit mode
+  const [schemeName, setSchemeName] = useState(initialData?.name || '');
+  const [description, setDescription] = useState(initialData?.description || '');
 
-  // 2. Lifecycle (Dates) - New Requirement
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  // 2. Lifecycle (Dates)
+  const [startDate, setStartDate] = useState(initialData?.startDate || '');
+  const [endDate, setEndDate] = useState(initialData?.endDate || '');
 
   // 3. Target Definition
-  const [targetType, setTargetType] = useState('total_sales'); // product_qty, category_qty, total_sales, adv_payment
-  const [selectedTargetItem, setSelectedTargetItem] = useState(''); // Specific product or category
+  const [targetType, setTargetType] = useState(() => {
+    if (!initialData?.type) return 'total_sales';
+    if (initialData.type === 'Product Qty') return 'product_qty';
+    if (initialData.type === 'Category Qty') return 'category_qty';
+    return 'total_sales';
+  });
+  const [selectedTargetItem, setSelectedTargetItem] = useState('');
 
   // 4. Budget & Constraints
-  const [totalBudget, setTotalBudget] = useState('');
+  const [totalBudget, setTotalBudget] = useState(
+    initialData?.budget ? initialData.budget.replace(/[^0-9]/g, '') : ''
+  );
   const [maxQualifiers, setMaxQualifiers] = useState('');
 
   // 5. Individual Rewards
-  const [individualTarget, setIndividualTarget] = useState('');
-  const [rewardRate, setRewardRate] = useState('');
-  const [payoutPerPerson, setPayoutPerPerson] = useState(0);
+  const [individualTarget, setIndividualTarget] = useState(initialData?.individualTarget || '');
+  const [rewardRate, setRewardRate] = useState(initialData?.rewardRate || '');
 
   // 6. Recipient Logic
-  const [recipientType, setRecipientType] = useState('customer'); // customer, distributor, sales_exec
+  const [recipientType, setRecipientType] = useState('customer');
   const [regionFilter, setRegionFilter] = useState('all');
 
-  // Load Initial Data if editing
-  useEffect(() => {
-    if (initialData) {
-      setSchemeName(initialData.name || '');
-      setDescription(initialData.description || '');
-      setStartDate(initialData.startDate || '');
-      setEndDate(initialData.endDate || '');
-      setTargetType(initialData.type === 'Product Qty' ? 'product_qty' :
-        initialData.type === 'Category Qty' ? 'category_qty' : 'total_sales');
-      setTotalBudget(initialData.budget ? initialData.budget.replace(/[^0-9]/g, '') : '');
-      setIndividualTarget(initialData.individualTarget || ''); // Assuming these fields exist in data model
-      setRewardRate(initialData.rewardRate || '');
-      // ... map other fields as needed
-    }
-  }, [initialData]);
-
-  // Auto-Calculate Payout
-  useEffect(() => {
+  // Auto-Calculate Payout (derived value, no setState needed)
+  const payoutPerPerson = useMemo(() => {
     const target = parseFloat(individualTarget) || 0;
     const rate = parseFloat(rewardRate) || 0;
-    setPayoutPerPerson(target * (rate / 100));
+    return target * (rate / 100);
   }, [individualTarget, rewardRate]);
 
   const handleSave = () => {
@@ -159,8 +168,8 @@ const CreateSchemeForm: React.FC<CreateSchemeFormProps> = ({ onCancel, onSave, i
                           key={opt.id}
                           onClick={() => setTargetType(opt.id)}
                           className={`p - 3 rounded - xl border text - sm font - medium transition - all flex flex - col items - center gap - 2 ${targetType === opt.id
-                              ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.1)]'
-                              : 'bg-[#0B0C10] border-[#1F2937] text-gray-400 hover:border-gray-600'
+                            ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.1)]'
+                            : 'bg-[#0B0C10] border-[#1F2937] text-gray-400 hover:border-gray-600'
                             } `}
                         >
                           <span className="text-xl">{opt.icon}</span>

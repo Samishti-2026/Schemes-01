@@ -7,6 +7,8 @@ export interface Recipient {
   type?: string;
   region?: string; // North, South, East, West
   paymentStatus?: string; // Pending, Completed, Failed
+  invoiceDate?: string;
+  paymentDate?: string;
   products?: string[]; // List of products they deal in
   // Computed fields
   projectedTO?: number;

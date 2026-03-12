@@ -8,6 +8,8 @@ import AnalyticsGraph from './AnalyticsGraph';
 import CustomersTab from './CustomersTab';
 import AnalyticsTab from './AnalyticsTab';
 import SettingsTab from './SettingsTab';
+import SchemeConfigTab from './SchemeConfigTab';
+// import CreateSchemeTab from './CreateSchemeTab';
 
 const DashboardGrid = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -15,6 +17,7 @@ const DashboardGrid = () => {
   const renderContent = () => {
     switch (activeTab) {
       // case 'Schemes': return <SchemesTab />; // Hidden
+      case 'Scheme Config': return <SchemeConfigTab />;
       case 'Scheme': return <CustomersTab />;
       case 'Analytics': return <AnalyticsTab />;
       case 'Settings': return <SettingsTab />;
@@ -62,7 +65,7 @@ const DashboardGrid = () => {
 
         <nav className="flex-1 p-4 space-y-1">
           {/* Navigation Items */}
-          {['Dashboard', 'Scheme', 'Analytics', 'Settings'].map(item => (
+          {['Dashboard', 'Scheme Config', 'Scheme', 'Analytics', 'Settings'].map(item => (
             <div
               key={item}
               onClick={() => setActiveTab(item)}

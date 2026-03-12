@@ -1,19 +1,54 @@
+import { useState, useEffect } from 'react';
+import AnalyticsGraph from './AnalyticsGraph';
+import { fetchKpis } from '../api';
 
-import AnalyticsGraph from './AnalyticsGraph'; // Reuse existing component
+interface KpiData {
+  totalRevenue: string;
+  revenueChange: string;
+  activeSchemes: number;
+  schemesChange: string;
+  avgOrderValue: string;
+  avgOrderChange: string;
+}
 
 const AnalyticsTab = () => {
+  const [kpis, setKpis] = useState<KpiData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchKpis();
+        setKpis(data);
+      } catch (err) {
+        console.error('Failed to load KPIs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const kpiCards = kpis
+    ? [
+      { label: 'Total Revenue', value: kpis.totalRevenue, change: kpis.revenueChange, color: 'text-green-400' },
+      { label: 'Active Schemes', value: kpis.activeSchemes, change: kpis.schemesChange, color: 'text-blue-400' },
+      { label: 'Avg Order Value', value: kpis.avgOrderValue, change: kpis.avgOrderChange, color: 'text-red-400' },
+    ]
+    : [
+      { label: 'Total Revenue', value: '...', change: '-', color: 'text-green-400' },
+      { label: 'Active Schemes', value: '...', change: '-', color: 'text-blue-400' },
+      { label: 'Avg Order Value', value: '...', change: '-', color: 'text-red-400' },
+    ];
+
   return (
     <div className="p-6 h-full flex flex-col gap-6 overflow-y-auto custom-scrollbar">
       <h2 className="text-2xl font-bold text-white">Performance Analytics</h2>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: 'Total Revenue', value: '$124,500', change: '+12%', color: 'text-green-400' },
-          { label: 'Active Schemes', value: '4', change: '0%', color: 'text-blue-400' },
-          { label: 'Avg Order Value', value: '$845', change: '-2%', color: 'text-red-400' },
-        ].map((kpi, i) => (
-          <div key={i} className="bg-[#111318] p-6 rounded-xl border border-[#1F2937]">
+        {kpiCards.map((kpi, i) => (
+          <div key={i} className={`bg-[#111318] p-6 rounded-xl border border-[#1F2937] ${loading ? 'animate-pulse' : ''}`}>
             <p className="text-gray-500 text-sm uppercase tracking-wider mb-2">{kpi.label}</p>
             <div className="flex items-end justify-between">
               <h3 className="text-3xl font-bold text-white">{kpi.value}</h3>
