@@ -1,46 +1,25 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { BillingsService } from './billings.service';
-import { Billing } from './billing.entity';
+import { Billing } from '../entities/billing.entity';
+import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Billings')
-@Controller('api/billings')
+@ApiTags('billings')
+@Controller('billings')
 export class BillingsController {
-  constructor(private readonly service: BillingsService) { }
+  constructor(private readonly service: BillingsService) {}
 
   @Get()
-  findAll(): Promise<Billing[]> {
+  findAll() {
     return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Billing | null> {
+  findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
   }
 
   @Post()
-  create(@Body() data: Partial<Billing>): Promise<Billing> {
+  create(@Body() data: Partial<Billing>) {
     return this.service.create(data);
-  }
-
-  @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() data: Partial<Billing>,
-  ): Promise<Billing | null> {
-    return this.service.update(+id, data);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.service.remove(+id);
   }
 }

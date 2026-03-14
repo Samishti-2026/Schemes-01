@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { TenantData } from '../api';
 import SchemeTarget from './SchemeTarget';
 import UpcomingSchemes from './UpcomingSchemes';
 import TotalSales from './TotalSales';
@@ -11,7 +12,21 @@ import SettingsTab from './SettingsTab';
 import SchemeConfigTab from './SchemeConfigTab';
 // import CreateSchemeTab from './CreateSchemeTab';
 
-const DashboardGrid = () => {
+interface UserData {
+  id: number;
+  username: string;
+  displayName: string;
+  role: string;
+}
+
+interface DashboardGridProps {
+  tenant: TenantData;
+  user: UserData;
+  onSwitchTenant: () => void;
+  onLogout: () => void;
+}
+
+const DashboardGrid = ({ tenant, user, onSwitchTenant, onLogout }: DashboardGridProps) => {
   const [activeTab, setActiveTab] = useState('Dashboard');
 
   const renderContent = () => {
@@ -57,11 +72,25 @@ const DashboardGrid = () => {
 
       {/* Sidebar */}
       <div className="w-64 border-r border-[#1F2937] flex flex-col hidden lg:flex bg-[#111318]">
-        {/* <div className="p-6 border-b border-[#1F2937]">
-          <h1 className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-            Samishti Admin
-          </h1>
-        </div> */}
+        {/* Tenant Brand Header */}
+        <div className="p-5 border-b border-[#1F2937]">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${tenant.color || '#06b6d4'}30, ${tenant.color || '#06b6d4'}10)`,
+                border: `1px solid ${tenant.color || '#06b6d4'}40`,
+                color: tenant.color || '#06b6d4',
+              }}
+            >
+              {tenant.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-sm font-semibold text-white truncate">{tenant.name}</h1>
+              <p className="text-xs text-gray-500 truncate">{tenant.industry || tenant.code}</p>
+            </div>
+          </div>
+        </div>
 
         <nav className="flex-1 p-4 space-y-1">
           {/* Navigation Items */}
@@ -83,14 +112,36 @@ const DashboardGrid = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-[#1F2937]">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500"></div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">Executive</span>
-              <span className="text-xs text-gray-500">executive@samishti.com</span>
+        <div className="p-4 border-t border-[#1F2937] space-y-2">
+          {/* User info */}
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{ background: `${tenant.color || '#06b6d4'}30`, color: tenant.color || '#06b6d4' }}>
+              {user.displayName.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{user.displayName}</p>
+              <p className="text-xs text-gray-500 truncate">{user.role}</p>
             </div>
           </div>
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-red-400 bg-[#0B0C10] border border-[#1F2937] hover:border-red-800 transition-all duration-200"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
+          <button
+            onClick={onSwitchTenant}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white bg-[#0B0C10] border border-[#1F2937] hover:border-gray-600 transition-all duration-200 group"
+          >
+            <svg className="w-3.5 h-3.5 text-gray-500 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Switch Company
+          </button>
         </div>
       </div>
 

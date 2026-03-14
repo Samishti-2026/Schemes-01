@@ -1,0 +1,16 @@
+Checking DB: MultiTenantDB
+  Table customer: NOT FOUND
+Checking DB: AcmeCorp
+  Table customer: NOT FOUND
+Checking DB: NovaTech
+  Table customer: NOT FOUND
+Checking DB: Car-Rental
+  Table customer: NOT FOUND
+Checking DB: Sales_DB
+  Table customer: NOT FOUND
+Checking DB: Scheme Tool
+  Table customer: NOT FOUND
+Checking DB: schemes_db
+  Table customer: NOT FOUND
+Checking DB: Schemes_DB
+  Table customer: NOT FOUND

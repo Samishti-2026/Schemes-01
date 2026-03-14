@@ -29,6 +29,7 @@ const getIcon = (name: string) => DATASET_ICONS[name.toLowerCase()] ?? '🗄️'
 // ── Component ──────────────────────────────────────────────────────────────────
 const SchemeConfigTab = () => {
   const [datasets, setDatasets] = useState<DatasetDef[]>([]);
+  const [dbName, setDbName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -47,7 +48,8 @@ const SchemeConfigTab = () => {
       try {
         const raw = await fetchDatasets();
         if (cancelled) return;
-        setDatasets(raw.map(ds => ({ ...ds, icon: getIcon(ds.name) })));
+        setDbName(raw.database);
+        setDatasets(raw.datasets.map(ds => ({ ...ds, icon: getIcon(ds.name) })));
       } catch {
         if (!cancelled) setLoadError('Failed to load datasets from server.');
       } finally {
@@ -162,6 +164,12 @@ const SchemeConfigTab = () => {
             <h1 className="text-3xl font-bold text-white">Configure Schemes</h1>
           </div>
           <p className="text-gray-400 text-sm">Select datasets and fields to include in your scheme</p>
+          {dbName && (
+            <div className="mt-2 inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Active Database:</span>
+              <span className="text-xs text-white font-mono">{dbName}</span>
+            </div>
+          )}
         </div>
 
         {/* Loading */}

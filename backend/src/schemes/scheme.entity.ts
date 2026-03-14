@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('schemes')
 export class Scheme {
@@ -18,48 +12,33 @@ export class Scheme {
   description: string;
 
   @Column({ type: 'date', nullable: true })
-  startDate: string;
+  startDate: Date;
 
   @Column({ type: 'date', nullable: true })
-  endDate: string;
+  endDate: Date;
 
-  @Column({ default: 'upcoming' })
-  status: string; // active | expired | upcoming
+  @Column()
+  status: string;
 
-  @Column({ default: 'total_sales' })
-  targetType: string; // product_qty | category_qty | total_sales | adv_payment
+  @Column()
+  targetType: string;
 
   @Column({ nullable: true })
   selectedTargetItem: string;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
-  targetValue: number;
-
-  @Column({ default: 'amount' })
-  targetUnit: string; // amount | quantity | percentage
-
-  @Column({ type: 'jsonb', nullable: true })
-  rules: { field: string; operator: string; value: string }[];
-
-  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   totalBudget: number;
 
   @Column({ nullable: true })
   maxQualifiers: number;
 
-  @Column({ nullable: true })
-  payoutType: string;
-
-  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
-  payoutAmount: number;
-
-  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  @Column('numeric', { nullable: true })
   payoutPerPerson: number;
 
-  @Column({ default: 'customer' })
-  recipientType: string; // customer | distributor | sales_exec
+  @Column()
+  recipientType: string;
 
-  @Column({ default: 'all' })
+  @Column()
   regionFilter: string;
 
   @Column({ nullable: true })
@@ -68,15 +47,30 @@ export class Scheme {
   @Column({ nullable: true })
   category: string;
 
-  @Column({ default: 0 })
+  @Column()
   targets: number;
 
   @Column({ nullable: true })
   revenue: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @Column('numeric', { nullable: true })
+  targetValue: number;
+
+  @Column()
+  targetUnit: string;
+
+  @Column('jsonb', { nullable: true })
+  rules: any;
+
+  @Column({ nullable: true })
+  payoutType: string;
+
+  @Column('numeric', { nullable: true })
+  payoutAmount: number;
 }

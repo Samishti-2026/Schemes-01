@@ -1,23 +1,13 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  ParseIntPipe,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { SchemesService } from './schemes.service';
-import { CreateSchemeDto } from './dto/create-scheme.dto';
-import { UpdateSchemeDto } from './dto/update-scheme.dto';
+import { Scheme } from './scheme.entity';
+import { ApiTags, ApiHeader } from '@nestjs/swagger';
 
-@ApiTags('Schemes')
-@Controller('api/schemes')
+@ApiTags('schemes')
+@ApiHeader({ name: 'x-tenant-id', required: true })
+@Controller('schemes')
 export class SchemesController {
-  constructor(private readonly schemesService: SchemesService) { }
+  constructor(private readonly schemesService: SchemesService) {}
 
   @Get()
   findAll(
@@ -26,31 +16,26 @@ export class SchemesController {
     @Query('search') search?: string,
     @Query('status') status?: string,
   ) {
-    return this.schemesService.findAll({ region, type, search, status });
-  }
-
-  @Get('upcoming')
-  getUpcoming() {
-    return this.schemesService.getUpcoming();
+    return this.schemesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.schemesService.findOne(id);
   }
 
   @Post()
-  create(@Body() dto: CreateSchemeDto) {
-    return this.schemesService.create(dto);
+  create(@Body() data: Partial<Scheme>) {
+    return this.schemesService.create(data);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateSchemeDto) {
-    return this.schemesService.update(id, dto);
+  update(@Param('id') id: string, @Body() data: Partial<Scheme>) {
+    return this.schemesService.update(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: string) {
     return this.schemesService.remove(id);
   }
 }

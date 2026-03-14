@@ -1,0 +1,37 @@
+DB: AcmeCorp
+  Tables: users
+    Table users: 3 rows
+DB: NovaTech
+  Tables: users
+    Table users: 3 rows
+DB: Sales_DB
+  Tables: categories, products, customers, invoices, query_configs
+    Table categories: 6 rows
+    Table products: 10 rows
+    Table customers: 5 rows
+    Table invoices: 24 rows
+    Table query_configs: 7 rows
+DB: Schemes_DB
+  Tables: users, settings, schemes, recipients, scheme_configs, customers, payments, billings, products, tenants
+    Table users: 10 rows
+    Table settings: 1 rows
+    Table schemes: 10 rows
+    Table recipients: 155 rows
+    Table scheme_configs: 1 rows
+    Table customers: 5 rows
+    Table payments: 115 rows
+    Table billings: 314 rows
+    Table products: 6 rows
+    Table tenants: 5 rows
+DB: Scheme Tool
+  Tables: material, billing, payment, schemes, recipients, settings, scheme_configs, products, billings, payments, customers
+    Table material: 5 rows
+    Table billing: 5 rows
+    Table payment: 4 rows
+    Table schemes: 10 rows
+    Table recipients: 155 rows
+    Table settings: 1 rows
+    Table scheme_configs: 1 rows
+    Table billings: 300 rows
+    Table payments: 102 rows
+    Table customers: 5 rows

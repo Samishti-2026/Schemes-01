@@ -1,0 +1,11 @@
+Checking DB: postgres
+  Table customer: NOT FOUND
+  Error connecting to MultiTenant_DB: database "MultiTenant_DB" does not exist
+Checking DB: Common_DB
+  Table customer: NOT FOUND
+Checking DB: Scheme_Tool_DB
+  Table customer: 7 total, 0 with name
+Checking DB: tenant_sam002
+  Table customer: 0 total, 0 with name
+Checking DB: Scheme_Tools_DB
+  Table customer: 0 total, 0 with name

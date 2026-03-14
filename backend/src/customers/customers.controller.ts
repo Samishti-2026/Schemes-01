@@ -1,46 +1,25 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { CustomersService } from './customers.service';
-import { Customer } from './customer.entity';
+import { Customer } from '../entities/customer.entity';
+import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Customers')
-@Controller('api/customers')
+@ApiTags('customers')
+@Controller('customers')
 export class CustomersController {
-  constructor(private readonly service: CustomersService) { }
+  constructor(private readonly service: CustomersService) {}
 
   @Get()
-  findAll(): Promise<Customer[]> {
+  findAll() {
     return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Customer | null> {
+  findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
   }
 
   @Post()
-  create(@Body() data: Partial<Customer>): Promise<Customer> {
+  create(@Body() data: Partial<Customer>) {
     return this.service.create(data);
-  }
-
-  @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() data: Partial<Customer>,
-  ): Promise<Customer | null> {
-    return this.service.update(+id, data);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.service.remove(+id);
   }
 }

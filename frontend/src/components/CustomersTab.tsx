@@ -13,7 +13,7 @@ const CustomersTab = () => {
 
   // Top Controls
   const [recipientType, setRecipientType] = useState(savedState.recipientType || 'Customer');
-  const [targetMetric, setTargetMetric] = useState(savedState.targetMetric || 'Sales');
+  const [targetMetric, setTargetMetric] = useState(savedState.targetMetric || 'Quantity');
   interface FilterRule {
     id: string;
     field: string;
@@ -110,7 +110,8 @@ const CustomersTab = () => {
 
     // Fallback — load from datasets metadata API
     try {
-      const datasets = await fetchDatasets();
+      const response = await fetchDatasets();
+      const datasets = response.datasets;
       if (datasets && datasets.length > 0) {
         const groups = datasets
           .map(ds => ({
@@ -454,9 +455,7 @@ const CustomersTab = () => {
               onChange={(e) => setTargetMetric(e.target.value)}
               className="bg-[#111318] border border-[#1F2937] rounded-lg px-3 py-1.5 text-sm w-full sm:w-48 appearance-none focus:border-cyan-500 outline-none"
             >
-              <option>Sales</option>
               <option>Quantity</option>
-              <option>CatQuantity</option>
               <option>Payment</option>
             </select>
             <svg className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -734,10 +733,15 @@ const CustomersTab = () => {
                     <th className="px-3 sm:px-4 py-2 text-left whitespace-nowrap">Recipient</th>
                     <th className="px-3 sm:px-4 py-2 text-center whitespace-nowrap">Inv. Date</th>
                     <th className="px-3 sm:px-4 py-2 text-center whitespace-nowrap">Pay Date</th>
-                    {targetMetric.toLowerCase().includes('quantity') && (
-                      <th className="px-3 sm:px-4 py-2 text-right whitespace-nowrap text-cyan-400">Quantity</th>
+                    {targetMetric.toLowerCase().includes('quantity') ? (
+                      <>
+                        <th className="px-3 sm:px-4 py-2 text-right whitespace-nowrap text-cyan-400">Qty Till Date</th>
+                        <th className="px-3 sm:px-4 py-2 text-right whitespace-nowrap text-cyan-400">Forecasted Qty</th>
+                        <th className="px-3 sm:px-4 py-2 text-right whitespace-nowrap text-cyan-400">Total Qty</th>
+                      </>
+                    ) : (
+                      <th className="px-3 sm:px-4 py-2 text-right text-cyan-400 whitespace-nowrap">Total Amount</th>
                     )}
-                    <th className="px-3 sm:px-4 py-2 text-right text-cyan-400 whitespace-nowrap">Total Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1F2937]/50 text-xs">
@@ -758,19 +762,32 @@ const CustomersTab = () => {
                         <td className="px-3 sm:px-4 py-2.5 text-center font-mono text-gray-400 whitespace-nowrap">
                           {r.paymentDate ? new Date(r.paymentDate).toLocaleDateString('en-GB') : '-'}
                         </td>
-                        {targetMetric.toLowerCase().includes('quantity') && (
-                          <td className="px-3 sm:px-4 py-2.5 text-right text-cyan-400 font-mono whitespace-nowrap">
-                            {r.totalTO.toLocaleString()}
+                        {targetMetric.toLowerCase().includes('quantity') ? (
+                          <>
+                            <td className="px-3 sm:px-4 py-2.5 text-right text-cyan-400 font-mono whitespace-nowrap">
+                              {Number(r.currentTO).toLocaleString()}
+                            </td>
+                            <td className="px-3 sm:px-4 py-2.5 text-right text-cyan-400 font-mono whitespace-nowrap">
+                              {Number(r.projectedTO).toLocaleString()}
+                            </td>
+                            <td className="px-3 sm:px-4 py-2.5 text-right font-mono whitespace-nowrap group-hover:text-green-400">
+                              <span className={r.isQualifying ? 'text-green-400 font-bold' : 'text-gray-400'}>
+                                {r.totalTO.toLocaleString()}
+                              </span>
+                            </td>
+                          </>
+                        ) : (
+                          <td className="px-3 sm:px-4 py-2.5 text-right font-mono whitespace-nowrap group-hover:text-green-400">
+                            <span className={r.isQualifying ? 'text-green-400 font-bold' : 'text-gray-400'}>
+                              {r.totalTO.toLocaleString()}
+                            </span>
                           </td>
                         )}
-                        <td className="px-3 sm:px-4 py-2.5 text-right font-mono whitespace-nowrap group-hover:text-green-400">
-                          <span className={r.isQualifying ? 'text-green-400 font-bold' : 'text-gray-400'}>{targetMetric.toLowerCase().includes('quantity') ? '-' : r.totalTO.toLocaleString()}</span>
-                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={targetMetric.toLowerCase().includes('quantity') ? 5 : 4} className="py-20 text-center">
+                      <td colSpan={targetMetric.toLowerCase().includes('quantity') ? 6 : 4} className="py-20 text-center">
                         <div className="flex flex-col items-center gap-2">
                           <span className="text-2xl opacity-20">🔍</span>
                           <p className="text-gray-500 text-sm">
@@ -803,64 +820,68 @@ const CustomersTab = () => {
           {tiers.length < 3 && (
             <div className="flex flex-col gap-1.5 w-full animate-fadeIn">
 
-              {/* Interest Toggle */}
-              <div
-                onClick={() => setIsInterestEnabled(!isInterestEnabled)}
-                className="flex justify-between items-center bg-[#111318] border border-[#1F2937] hover:border-gray-600 transition-colors rounded-xl px-3 py-2.5 shadow-sm w-full cursor-pointer group"
-              >
-                <div className="flex items-center gap-2">
-                  <div className={`p-1 rounded-md transition-colors ${isInterestEnabled ? 'bg-amber-500/20 text-amber-500' : 'bg-[#1F2937] text-gray-500 group-hover:text-gray-400'}`}>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                  </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${isInterestEnabled ? 'text-amber-500' : 'text-gray-500 group-hover:text-gray-400'}`}>
-                    Apply Interest Penalty
-                  </span>
-                </div>
-
-                {/* Custom Toggle Switch */}
-                <div className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isInterestEnabled ? 'bg-amber-500' : 'bg-[#1F2937]'}`}>
-                  <div className={`absolute top-[2px] left-[2px] w-3 h-3 rounded-full bg-white transition-transform duration-300 ${isInterestEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
-                </div>
-              </div>
-
-              {/* Interest Controls (Below Toggle) */}
-              <div className={`bg-[#111318] border border-[#1F2937] rounded-xl p-2.5 shadow-sm w-full ${isInterestEnabled ? '' : 'hidden'}`}>
-                <div className="flex gap-3">
-                  {/* Interest Free Period Textbox */}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[9px] text-gray-400 uppercase tracking-wider">Interest Free Period</span>
+              {targetMetric === 'Payment' && (
+                <>
+                  {/* Interest Toggle */}
+                  <div
+                    onClick={() => setIsInterestEnabled(!isInterestEnabled)}
+                    className="flex justify-between items-center bg-[#111318] border border-[#1F2937] hover:border-gray-600 transition-colors rounded-xl px-3 py-2.5 shadow-sm w-full cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1 rounded-md transition-colors ${isInterestEnabled ? 'bg-amber-500/20 text-amber-500' : 'bg-[#1F2937] text-gray-500 group-hover:text-gray-400'}`}>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                      </div>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${isInterestEnabled ? 'text-amber-500' : 'text-gray-500 group-hover:text-gray-400'}`}>
+                        Apply Interest Penalty
+                      </span>
                     </div>
-                    <div className="relative flex items-center">
-                      <input
-                        type="number"
-                        value={interestFreePeriod === 0 ? '' : interestFreePeriod}
-                        onChange={(e) => setInterestFreePeriod(e.target.value ? parseInt(e.target.value) : 0)}
-                        placeholder="0"
-                        className="w-full bg-[#0B0C10] border border-[#1F2937] rounded-lg px-2 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-cyan-500 transition-all pr-12"
-                      />
-                      <span className="absolute right-2 text-gray-500 text-[10px] font-bold pointer-events-none">Days</span>
+
+                    {/* Custom Toggle Switch */}
+                    <div className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isInterestEnabled ? 'bg-amber-500' : 'bg-[#1F2937]'}`}>
+                      <div className={`absolute top-[2px] left-[2px] w-3 h-3 rounded-full bg-white transition-transform duration-300 ${isInterestEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
                     </div>
                   </div>
 
-                  {/* Interest Above Target Textbox */}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[9px] text-gray-400 uppercase tracking-wider">Interest Rate</span>
-                    </div>
-                    <div className="relative flex items-center">
-                      <input
-                        type="number"
-                        value={interestRate === '' ? '' : interestRate}
-                        onChange={(e) => setinterestRate(e.target.value ? parseFloat(e.target.value) : '')}
-                        placeholder="1.5"
-                        className="w-full bg-[#0B0C10] border border-[#1F2937] rounded-lg px-2 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-cyan-500 transition-all pr-6"
-                      />
-                      <span className="absolute right-2 text-gray-500 text-[10px] font-bold pointer-events-none">%</span>
+                  {/* Interest Controls (Below Toggle) */}
+                  <div className={`bg-[#111318] border border-[#1F2937] rounded-xl p-2.5 shadow-sm w-full ${isInterestEnabled ? '' : 'hidden'}`}>
+                    <div className="flex gap-3">
+                      {/* Interest Free Period Textbox */}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[9px] text-gray-400 uppercase tracking-wider">Interest Free Period</span>
+                        </div>
+                        <div className="relative flex items-center">
+                          <input
+                            type="number"
+                            value={interestFreePeriod === 0 ? '' : interestFreePeriod}
+                            onChange={(e) => setInterestFreePeriod(e.target.value ? parseInt(e.target.value) : 0)}
+                            placeholder="0"
+                            className="w-full bg-[#0B0C10] border border-[#1F2937] rounded-lg px-2 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-cyan-500 transition-all pr-12"
+                          />
+                          <span className="absolute right-2 text-gray-500 text-[10px] font-bold pointer-events-none">Days</span>
+                        </div>
+                      </div>
+
+                      {/* Interest Above Target Textbox */}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[9px] text-gray-400 uppercase tracking-wider">Interest Rate</span>
+                        </div>
+                        <div className="relative flex items-center">
+                          <input
+                            type="number"
+                            value={interestRate === '' ? '' : interestRate}
+                            onChange={(e) => setinterestRate(e.target.value ? parseFloat(e.target.value) : '')}
+                            placeholder="1.5"
+                            className="w-full bg-[#0B0C10] border border-[#1F2937] rounded-lg px-2 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-cyan-500 transition-all pr-6"
+                          />
+                          <span className="absolute right-2 text-gray-500 text-[10px] font-bold pointer-events-none">%</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
 
               {/* 1. Target Section */}
               <div className="bg-[#111318] border border-[#1F2937] rounded-xl p-2 shadow-md w-full mb-1">
@@ -952,7 +973,7 @@ const CustomersTab = () => {
                     </div>
                   </div>
 
-                  <div className="flex bg-[#0B0C10] rounded-lg p-0.5 gap-1 border border-[#1F2937]">
+                  <div className="flex bg-[#0B0C10] rounded-lg p-1 gap-1 border border-[#1F2937]/80 shadow-inner">
                     {['Fixed', 'Percent', 'perPiece', 'Custom'].map(type => (
                       <button
                         key={type}
@@ -960,12 +981,12 @@ const CustomersTab = () => {
                           setPayoutType(type);
                           if (type === 'Percent' && payoutAmount > 100) setPayoutAmount(5);
                         }}
-                        className={`flex-1 py-0.5 px-0.5 rounded-md text-[9px] font-bold uppercase transition-all whitespace-nowrap ${payoutType === type
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'text-gray-500 hover:text-gray-300'
+                        className={`flex-1 py-1.5 px-2 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap ${payoutType === type
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-300 hover:bg-[#1F2937]/30 border border-transparent'
                           }`}
                       >
-                        {type === 'perPiece' ? 'Piece' : type}
+                        {type === 'perPiece' ? 'Per Piece' : type}
                       </button>
                     ))}
                   </div>
@@ -982,7 +1003,7 @@ const CustomersTab = () => {
                     />
                     <div className="flex justify-between text-[9px] text-gray-500 mt-1 font-mono uppercase tracking-tighter italic">
                       <span>0</span>
-                      <span className="text-emerald-500/60 lowercase font-bold">{payoutType === 'perPiece' ? 'Piece' : payoutType} value</span>
+                      <span className="text-emerald-400/60 lowercase font-bold">{payoutType === 'Fixed' ? 'fixed value' : payoutType === 'Percent' ? 'percentage' : payoutType === 'perPiece' ? 'per piece' : 'custom payout'}</span>
                       <span>{payoutType === 'Percent' ? '100%' : '100k'}</span>
                     </div>
                   </div>
@@ -1034,7 +1055,7 @@ const CustomersTab = () => {
           )}
 
           {/* Stats Outputs as Table */}
-          {(targetMetric === 'Payment' || targetMetric.toLowerCase().includes('qty')) && (
+          {(targetMetric === 'Payment' || targetMetric.toLowerCase().includes('quantity')) && (
             <div className="flex flex-col gap-1 w-full mt-1">
               <div className="bg-[#111318] border border-[#1F2937] rounded-xl overflow-hidden shadow-sm">
                 <table className="w-full text-left border-collapse">
@@ -1073,7 +1094,7 @@ const CustomersTab = () => {
                 </table>
               </div>
 
-              {tiers.length < 3 && (targetMetric === 'Payment' || targetMetric.toLowerCase().includes('qty')) && (
+              {tiers.length < 3 && (targetMetric === 'Payment' || targetMetric.toLowerCase().includes('quantity')) && (
                 <button
                   onClick={() => {
                     setTiers([...tiers, { id: Date.now().toString(), targetThreshold, payoutType, payoutAmount, durationDays }]);

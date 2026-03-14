@@ -1,33 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Customer } from './customer.entity';
+import { Injectable, Inject } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import { Customer } from '../entities/customer.entity';
 
 @Injectable()
 export class CustomersService {
   constructor(
-    @InjectRepository(Customer)
-    private readonly repo: Repository<Customer>,
+    @Inject('TENANT_CONNECTION') private readonly dataSource: DataSource,
   ) {}
 
-  findAll(): Promise<Customer[]> {
-    return this.repo.find({ order: { createdAt: 'DESC' } });
+  private get repository(): Repository<Customer> {
+    return this.dataSource.getRepository(Customer);
   }
 
-  findOne(id: number): Promise<Customer | null> {
-    return this.repo.findOne({ where: { id } });
+  findAll() {
+    return this.repository.find();
   }
 
-  create(data: Partial<Customer>): Promise<Customer> {
-    return this.repo.save(this.repo.create(data));
+  findOne(customer_code: number) {
+    return this.repository.findOne({ where: { customer_code } });
   }
 
-  async update(id: number, data: Partial<Customer>): Promise<Customer | null> {
-    await this.repo.update(id, data);
-    return this.findOne(id);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.repo.delete(id);
+  create(data: Partial<Customer>) {
+    const customer = this.repository.create(data);
+    return this.repository.save(customer);
   }
 }

@@ -1,19 +1,23 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { DashboardService } from './dashboard.service';
 
-@ApiTags('Dashboard')
-@Controller('api/dashboard')
+@Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) { }
-
   @Get('summary')
-  getSummary() {
-    return this.dashboardService.getSummary();
+  async getSummary() {
+    return {
+      quarterLabel: 'Q3 2024',
+      changePercent: '+14.2%',
+      totalSales: '₹42.5L',
+      salesTarget: '₹50L',
+      progressPercent: 85,
+    };
   }
 
   @Get('upcoming-schemes')
-  getUpcomingSchemes() {
-    return this.dashboardService.getUpcomingSchemes();
+  async getUpcomingSchemes() {
+    return [
+      { id: 1, name: 'Summer Bonanza', startDate: '2024-06-01', target: '₹10M' },
+      { id: 2, name: 'Q3 Growth Stimulus', startDate: '2024-07-15', target: '500+ Qty' },
+    ];
   }
 }

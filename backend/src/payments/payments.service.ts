@@ -1,33 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Payment } from './payment.entity';
+import { Injectable, Inject } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import { Payment } from '../entities/payment.entity';
 
 @Injectable()
 export class PaymentsService {
   constructor(
-    @InjectRepository(Payment)
-    private readonly repo: Repository<Payment>,
+    @Inject('TENANT_CONNECTION') private readonly dataSource: DataSource,
   ) {}
 
-  findAll(): Promise<Payment[]> {
-    return this.repo.find({ order: { paidAt: 'DESC' } });
+  private get repository(): Repository<Payment> {
+    return this.dataSource.getRepository(Payment);
   }
 
-  findOne(id: number): Promise<Payment | null> {
-    return this.repo.findOne({ where: { id } });
+  findAll() {
+    return this.repository.find();
   }
 
-  create(data: Partial<Payment>): Promise<Payment> {
-    return this.repo.save(this.repo.create(data));
+  findOne(company_code: number, bill_doc: number, customer_number: number, accounting_document: number, item_num: number) {
+    return this.repository.findOne({ where: { company_code, bill_doc, customer_number, accounting_document, item_num } });
   }
 
-  async update(id: number, data: Partial<Payment>): Promise<Payment | null> {
-    await this.repo.update(id, data);
-    return this.findOne(id);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.repo.delete(id);
+  create(data: Partial<Payment>) {
+    const payment = this.repository.create(data);
+    return this.repository.save(payment);
   }
 }
