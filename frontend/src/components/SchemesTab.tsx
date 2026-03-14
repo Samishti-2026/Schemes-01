@@ -70,9 +70,9 @@ const SchemesTab = () => {
   const handleSaveScheme = async (newSchemeData: SchemeFormData) => {
     try {
       if (editingScheme) {
-        await updateScheme(editingScheme.id, newSchemeData);
+        await updateScheme(editingScheme.id, { ...newSchemeData });
       } else {
-        await createScheme(newSchemeData);
+        await createScheme({ ...newSchemeData });
       }
       setEditingScheme(null);
       setIsCreating(false);
@@ -116,7 +116,7 @@ const SchemesTab = () => {
       <CreateSchemeForm
         onCancel={() => { setIsCreating(false); setEditingScheme(null); }}
         onSave={handleSaveScheme}
-        initialData={editingScheme}
+        initialData={(editingScheme ?? undefined) as any}
       />
     );
   }
